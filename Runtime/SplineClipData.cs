@@ -1,5 +1,6 @@
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.Splines;
 
 namespace SplineScrubber
@@ -11,7 +12,12 @@ namespace SplineScrubber
     [ExecuteAlways]
     public class SplineClipData : MonoBehaviour
     {
-        [SerializeField] private SplineContainer _container;
+        [SerializeField]
+        private SplineContainer _container;
+
+        [SerializeField, Tooltip("Playable Director this spline clip will be used with. Used to re cache spline data on play.")]
+        PlayableDirector playableDirector;
+
 
         public SplineEvaluateHandler JobHandler => _handler;
         public float Length => _length;
@@ -21,6 +27,14 @@ namespace SplineScrubber
         private float _length;
         private SplinePath<Spline> _path;
         private NativeSpline _nativeSpline;
+
+        private void Awake()
+        {
+            if(playableDirector != null)
+            {
+                playableDirector.played += (_director) => CacheData();
+            }
+        }
 
         private void OnEnable()
         {
@@ -65,7 +79,10 @@ namespace SplineScrubber
             CacheData();
         }
 
-        private void CacheData()
+        /// <summary>
+        /// Update spline data used in Job
+        /// </summary>
+        public void CacheData()
         {
             _length = _container.CalculateLength();
             _path = new SplinePath<Spline>(_container.Splines);

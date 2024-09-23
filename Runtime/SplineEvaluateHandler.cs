@@ -23,6 +23,11 @@ namespace SplineScrubber
         public SplineEvaluateHandler()
         {
             _moveHandler = SplinesMoveHandler.Instance;
+            if(_moveHandler == null)
+            {
+                Debug.LogError("An instance of SplinesMoveHandler is missing in this scene!");
+                return;
+            }
             _moveHandler.Register(this);
             
             Indices = new NativeList<int>(_moveHandler.Capacity, Allocator.Persistent);
