@@ -52,11 +52,11 @@ namespace SplineScrubber
             CacheData();
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             Spline.Changed -= OnSplineChanged;
             // EditorSplineUtility.AfterSplineWasModified -= OnSplineModified;
-            Dispose();
+            _nativeSpline.Dispose();
             var moveInstance = SplinesMoveHandler.Instance;
             if (moveInstance != null)
             {
@@ -90,11 +90,6 @@ namespace SplineScrubber
             _nativeSpline.Dispose();
             _nativeSpline = new NativeSpline(_path, _container.transform.localToWorldMatrix, Allocator.Persistent);
             _handler.Spline = _nativeSpline;
-        }
-
-        private void Dispose()
-        {
-            _nativeSpline.Dispose();
         }
     }
 }
